@@ -1,0 +1,29 @@
+db:
+  image: arm32v7/postgres
+  restart: always
+  volumes:
+    - ./db:/var/lib/postgresql/data
+  env_file:
+    - db.env
+
+app:  
+  image: arm32v7/nextcloud:fpm
+  restart: always
+  volumes:
+    - ./nextcloud:/var/www/html
+  environment:
+    - POSTGRES_HOST=db
+  env_file:
+    - db.env
+  links:
+    - db
+
+web:
+  build: ./web
+  restart: always
+  ports:
+    - 8080:80
+  volumes:
+    - ./nextcloud:/var/www/html:ro
+  links:
+    - app
